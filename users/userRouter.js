@@ -42,8 +42,10 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/:id', (req, res) => {
-  // do your magic!
+// Get user by id
+
+router.get('/:id', validateUserId, (req, res) => {
+    res.status(200).json(req.user);
 });
 
 
@@ -65,7 +67,29 @@ router.put('/:id', (req, res) => {
 //custom middleware
 
 function validateUserId(req, res, next) {
-  // do your magic!
+    const userId = Number(req.params.id);
+
+    if (!isNaN(userId)) {
+        userDb.getById(userId)
+            .then(user => {
+                if (user === undefined) {
+                    res.status(404).json({
+                        error: "Could not find the user"
+                    });
+                }
+                req.user = user;
+                next();
+            })
+            .catch(error => {
+                res.status(500).json({
+                    error: "Server error. Could not get a user."
+                });
+            });
+    } else {
+        res.status(400).json({
+            error: "Invalid user id"
+        });
+    }
 }
 
 function validateUser(req, res, next) {
