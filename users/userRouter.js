@@ -49,10 +49,22 @@ router.get('/:id', validateUserId, (req, res) => {
 });
 
 
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
+// Get all posts by user id
+
+router.get('/:id/posts', validateUserId, (req, res) => {
+    userDb.getUserPosts(req.user.id)
+        .then(posts => {
+            res.status(200).json(posts);
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: "Server error. Could not get all posts."
+            })
+        });
 });
 
+
+// Delete a user
 
 router.delete('/:id', validateUserId, (req, res) => {
     userDb.remove(req.user.id)
@@ -72,6 +84,8 @@ router.delete('/:id', validateUserId, (req, res) => {
         });
 });
 
+
+// Update a user
 
 router.put('/:id', (req, res) => {
   // do your magic!
@@ -121,7 +135,6 @@ function validateUser(req, res, next) {
 }
 
 function validatePost(req, res, next) {
-  // do your magic!
 }
 
 module.exports = router;
