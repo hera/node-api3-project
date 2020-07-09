@@ -1,18 +1,19 @@
+require("dotenv").config();
 const express = require("express");
 const userRouter = require("./users/userRouter");
 
-const PORT = 8000;
-const ADDRESS = "127.0.0.1";
-
+const PORT = process.env.PORT || 7000;
 
 const server = express();
 
 server.use(logger);
 server.use(express.json());
 
-server.use("api/users", userRouter);
+server.use("/api/users", userRouter);
 
-server.listen(PORT, ADDRESS, () => console.log("Server is working..."));
+
+server.listen(PORT, () => console.log("Server is working..."));
+
 
 function logger(req, res, next) {
     const currentDate = new Date();
