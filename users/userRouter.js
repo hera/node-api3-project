@@ -5,9 +5,21 @@ const userDb = require("./userDb")
 const router = express.Router();
 
 
-router.post('/', (req, res) => {
-  // do your magic!
-});
+// Add a user
+
+router.post('/', validateUser, (req, res) => {
+    userDb.insert({ name: req.body.name })
+        .then(response => {
+            console.log(response);
+            res.status(201).json({"message": "ok!"});
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: "Server error. Could not add the user."
+            })
+        });
+
+}); 
 
 
 router.post('/:id/posts', (req, res) => {
@@ -15,10 +27,9 @@ router.post('/:id/posts', (req, res) => {
 });
 
 
-// Get all posts
+// Get all users
 
 router.get('/', (req, res) => {
-    console.error('asdf');
     userDb.get()
         .then(users => {
             res.status(200).json(users);
@@ -58,7 +69,17 @@ function validateUserId(req, res, next) {
 }
 
 function validateUser(req, res, next) {
-  // do your magic!
+    if (!Object.keys(req.body).length) {
+        res.status(400).json({
+            error: "Missing user data"
+        });
+    } else if (!req.body.name) {
+        res.status(400).json({
+            error: "Missing required name field"
+        });
+    }
+
+    next();
 }
 
 function validatePost(req, res, next) {
