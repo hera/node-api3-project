@@ -99,8 +99,19 @@ router.delete('/:id', validateUserId, (req, res) => {
 
 // Update a user
 
-router.put('/:id', (req, res) => {
-  // do your magic!
+router.put('/:id', validateUserId, validateUser, (req, res) => {
+    userDb.update(req.user.id, {
+        name: req.body.name
+    })
+    .then(user => {
+        res.status(200).json(user);
+    })
+    .catch(error => {
+        res.status(500).json({
+            error: "Server error. Could not update the user.",
+            message: error
+        })
+    });
 });
 
 
